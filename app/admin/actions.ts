@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { clearSession, requireAdmin } from "@/lib/auth";
 import { recipeInputSchema } from "@/lib/recipe-schema";
 import { slugify } from "@/lib/slug";
+import { studioPath } from "@/lib/studio-path";
 
 function lines(value: FormDataEntryValue | null) {
   return String(value ?? "").split("\n").map((line) => line.trim()).filter(Boolean);
@@ -37,14 +38,14 @@ export async function createRecipe(formData: FormData) {
   await requireAdmin(); const data = await parse(formData); let slug = slugify(data.title);
   if (await db.recipe.findUnique({ where: { slug } })) slug = `${slug}-${Date.now().toString().slice(-5)}`;
   await db.recipe.create({ data: { ...data, slug, publishedAt: data.status === "PUBLISHED" ? new Date() : null, ingredients: { create: data.ingredients.map((label, position) => ({ label, position })) }, steps: { create: data.steps.map((body, position) => ({ body, position })) } } });
-  revalidatePath("/"); redirect("/admin?created=1");
+  revalidatePath("/"); redirect(`${studioPath()}?created=1`);
 }
 
 export async function updateRecipe(id: string, formData: FormData) {
   await requireAdmin(); const current = await db.recipe.findUniqueOrThrow({ where: { id } }); const data = await parse(formData, current.image);
   await db.$transaction([db.ingredient.deleteMany({ where: { recipeId: id } }), db.recipeStep.deleteMany({ where: { recipeId: id } }), db.recipe.update({ where: { id }, data: { ...data, publishedAt: data.status === "PUBLISHED" ? (current.publishedAt ?? new Date()) : null, ingredients: { create: data.ingredients.map((label, position) => ({ label, position })) }, steps: { create: data.steps.map((body, position) => ({ body, position })) } } })]);
-  revalidatePath("/"); revalidatePath(`/recettes/${current.slug}`); redirect("/admin?updated=1");
+  revalidatePath("/"); revalidatePath(`/recettes/${current.slug}`); redirect(`${studioPath()}?updated=1`);
 }
 
-export async function deleteRecipe(id: string) { await requireAdmin(); await db.recipe.delete({ where: { id } }); revalidatePath("/"); redirect("/admin?deleted=1"); }
-export async function logoutAction() { await clearSession(); redirect("/admin/login"); }
+export async function deleteRecipe(id: string) { await requireAdmin(); await db.recipe.delete({ where: { id } }); revalidatePath("/"); redirect(`${studioPath()}?deleted=1`); }
+export async function logoutAction() { await clearSession(); redirect(studioPath("/login")); }

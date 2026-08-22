@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { studioPath } from "./studio-path";
 const COOKIE="pulse_session"; const MAX_AGE=60*60*12;
 type Session={userId:string;email:string;exp:number};
 function secret(){const value=process.env.AUTH_SECRET;if(!value)throw new Error("AUTH_SECRET manquant");return value}
@@ -11,4 +12,4 @@ export function readSessionToken(token?:string):Session|null{if(!token)return nu
 export async function setSession(userId:string,email:string){(await cookies()).set(COOKIE,createSessionToken(userId,email),{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"lax",path:"/",maxAge:MAX_AGE})}
 export async function clearSession(){(await cookies()).set(COOKIE,"",{httpOnly:true,expires:new Date(0),path:"/"})}
 export async function getSession(){return readSessionToken((await cookies()).get(COOKIE)?.value)}
-export async function requireAdmin(){const session=await getSession();if(!session)redirect("/admin/login");return session}
+export async function requireAdmin(){const session=await getSession();if(!session)redirect(studioPath("/login"));return session}

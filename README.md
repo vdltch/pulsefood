@@ -13,7 +13,7 @@ npm run db:seed
 npm run dev
 ```
 
-Ouvrir `http://localhost:3000`. Le studio est disponible sur `/admin`, l'API publique sur `/api/recipes` et le diagnostic sur `/api/health`.
+Ouvrir `http://localhost:3000`. Le studio est disponible sur le chemin privé défini par `STUDIO_PATH` ; `/admin` renvoie volontairement une erreur 404. L'API publique est sur `/api/recipes` et le diagnostic sur `/api/health`.
 
 ## Stack
 
@@ -31,7 +31,7 @@ npm run db:push
 npm run db:seed
 ```
 
-Le seed crée les recettes de démonstration et le compte défini par `ADMIN_EMAIL` / `ADMIN_PASSWORD`. Change impérativement ces valeurs avant le premier démarrage public.
+Le seed crée les recettes de démonstration et l'unique compte autorisé défini par `ADMIN_EMAIL` / `ADMIN_PASSWORD`. Change impérativement le mot de passe et `STUDIO_PATH` avant le premier démarrage public.
 
 ## Déploiement sur le VPS
 
