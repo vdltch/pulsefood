@@ -1,0 +1,21 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "sqlite"; url = env("DATABASE_URL") }
+
+model Recipe {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  image       String
+  prepMinutes Int
+  protein     Int
+  calories    Int
+  difficulty String   @default("Facile")
+  category    String
+  ingredients String
+  steps       String
+  featured    Boolean  @default(false)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
