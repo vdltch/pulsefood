@@ -1,0 +1,4 @@
+*:focus-visible{outline:3px solid var(--purple);outline-offset:3px}
+.error-page{min-height:100vh;padding:10vw;display:grid;place-content:center;max-width:800px;margin:auto}.error-page h1{font:clamp(50px,8vw,90px)/.9 'Instrument Serif';margin:25px 0}.error-page p{line-height:1.7;color:#617066}.error-page div{display:flex;gap:12px;margin-top:25px}.error-page button,.error-page a{border:1px solid var(--ink);background:var(--ink);color:white;padding:14px 18px}.error-page a{background:transparent;color:var(--ink)}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(max-width:800px){button,input,select,textarea{min-height:44px}.error-page{padding:24px}.error-page div{flex-direction:column}}

@@ -1,0 +1,5 @@
+import {createHmac,timingSafeEqual} from "node:crypto";
+export const MAX_AGE=60*60*12;type Session={userId:string;email:string;exp:number};
+function secret(){const value=process.env.AUTH_SECRET;if(!value)throw new Error("AUTH_SECRET manquant");return value}function sign(payload:string){return createHmac("sha256",secret()).update(payload).digest("base64url")}
+export function createSessionToken(userId:string,email:string){const payload=Buffer.from(JSON.stringify({userId,email,exp:Date.now()+MAX_AGE*1000} satisfies Session)).toString("base64url");return `${payload}.${sign(payload)}`}
+export function readSessionToken(token?:string):Session|null{if(!token)return null;const [payload,sig]=token.split(".");if(!payload||!sig)return null;const expected=Buffer.from(sign(payload));const actual=Buffer.from(sig);if(expected.length!==actual.length||!timingSafeEqual(expected,actual))return null;try{const session=JSON.parse(Buffer.from(payload,"base64url").toString()) as Session;return session.exp>Date.now()?session:null}catch{return null}}
