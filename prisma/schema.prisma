@@ -31,6 +31,11 @@ model Recipe {
   prepMinutes Int
   protein     Int
   calories    Int
+  carbohydrates Int?  @default(0)
+  fat           Int?  @default(0)
+  fiber         Int?  @default(0)
+  sugar         Int?  @default(0)
+  sodium        Int?  @default(0)
   servings    Int      @default(2)
   difficulty String   @default("Facile")
   category    String
@@ -42,6 +47,7 @@ model Recipe {
   publishedAt DateTime?
   scheduledFor DateTime?
   tags        String[] @default([])
+  collections String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   views       ViewEvent[]
@@ -95,6 +101,9 @@ model ViewEvent {
 model Ingredient {
   id String @id @default(cuid())
   label String
+  quantity Float?
+  unit String?
+  name String?
   position Int
   recipeId String
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)

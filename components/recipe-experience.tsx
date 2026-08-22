@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, ShoppingBasket, X } from "lucide-react";
 import type { ShoppingItem } from "./shopping-drawer";
+import { formatIngredient, type StructuredIngredient } from "@/lib/ingredient";
 
 function scaleIngredient(label: string, ratio: number) {
   return label.replace(/^(\d+(?:[.,]\d+)?)/, (value) => {
@@ -16,7 +17,7 @@ export function AnalyticsBeacon({ recipeId, path }: { recipeId?: string; path: s
   return null;
 }
 
-export function RecipeExperience({ recipe }: { recipe: { id: string; slug: string; title: string; servings: number; ingredients: string[]; steps: string[] } }) {
+export function RecipeExperience({ recipe }: { recipe: { id: string; slug: string; title: string; servings: number; ingredients: string[]; structuredIngredients?:StructuredIngredient[]; steps: string[] } }) {
   const [servings, setServings] = useState(recipe.servings || 2);
   const [cook, setCook] = useState(false);
   const [step, setStep] = useState(0);
@@ -24,7 +25,7 @@ export function RecipeExperience({ recipe }: { recipe: { id: string; slug: strin
   const [liked, setLiked] = useState(false);
   const [shoppingAdded, setShoppingAdded] = useState(false);
   const ratio = servings / (recipe.servings || 2);
-  const ingredients = useMemo(() => recipe.ingredients.map((item) => scaleIngredient(item, ratio)), [recipe.ingredients, ratio]);
+  const ingredients = useMemo(() => recipe.structuredIngredients?.length ? recipe.structuredIngredients.map(item=>formatIngredient(item,ratio)) : recipe.ingredients.map((item) => scaleIngredient(item, ratio)), [recipe.ingredients,recipe.structuredIngredients, ratio]);
 
   useEffect(() => { setLiked(JSON.parse(localStorage.getItem("pulse-favorites") || "[]").includes(recipe.slug)); }, [recipe.slug]);
   function favorite() {

@@ -5,7 +5,7 @@ import { Sparkles, WandSparkles } from "lucide-react";
 import { useRef, useState } from "react";
 
 type FullRecipe = Recipe & { ingredients: Ingredient[]; steps: RecipeStep[] };
-type GeneratedRecipe = { title:string;description:string;prepMinutes:number;protein:number;calories:number;servings:number;difficulty:string;category:string;dietary:string[];tags:string[];ingredients:string[];steps:string[] };
+type GeneratedRecipe = { title:string;description:string;prepMinutes:number;protein:number;calories:number;carbohydrates?:number;fat?:number;fiber?:number;sugar?:number;sodium?:number;servings:number;difficulty:string;category:string;dietary:string[];tags:string[];collections?:string[];ingredients:string[];steps:string[] };
 
 export function RecipeForm({ action, recipe, categories=[], tags=[], media=[] }: { action:(formData:FormData)=>void|Promise<void>;recipe?:FullRecipe;categories?:string[];tags?:string[];media?:MediaAsset[] }) {
   const formRef = useRef<HTMLFormElement>(null);

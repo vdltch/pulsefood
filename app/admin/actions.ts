@@ -9,6 +9,7 @@ import { clearSession, requireAdmin } from "@/lib/auth";
 import { recipeInputSchema } from "@/lib/recipe-schema";
 import { slugify } from "@/lib/slug";
 import { studioPath } from "@/lib/studio-path";
+import { parseIngredient } from "@/lib/ingredient";
 
 function lines(value: FormDataEntryValue | null) {
   return String(value ?? "").split("\n").map((line) => line.trim()).filter(Boolean);
@@ -31,8 +32,8 @@ async function imageFrom(formData: FormData, current = "") {
 async function parse(formData: FormData, currentImage = "") {
   return recipeInputSchema.parse({
     title: formData.get("title"), description: formData.get("description"), image: await imageFrom(formData, currentImage),
-    prepMinutes: formData.get("prepMinutes"), protein: formData.get("protein"), calories: formData.get("calories"), servings: formData.get("servings"),
-    difficulty: formData.get("difficulty"), category: formData.get("category"), dietary: lines(formData.get("dietary")), tags: lines(formData.get("tags")), ingredients: lines(formData.get("ingredients")),
+    prepMinutes: formData.get("prepMinutes"), protein: formData.get("protein"), calories: formData.get("calories"), carbohydrates:formData.get("carbohydrates"),fat:formData.get("fat"),fiber:formData.get("fiber"),sugar:formData.get("sugar"),sodium:formData.get("sodium"), servings: formData.get("servings"),
+    difficulty: formData.get("difficulty"), category: formData.get("category"), dietary: lines(formData.get("dietary")), tags: lines(formData.get("tags")), collections:lines(formData.get("collections")), ingredients: lines(formData.get("ingredients")),
     steps: lines(formData.get("steps")), featured: formData.get("featured") === "on", status: formData.get("status"), scheduledFor: formData.get("scheduledFor") ? new Date(String(formData.get("scheduledFor"))) : null,
   });
 }
@@ -40,18 +41,18 @@ async function parse(formData: FormData, currentImage = "") {
 export async function createRecipe(formData: FormData) {
   await requireAdmin(); const data = await parse(formData); let slug = slugify(data.title);
   if (await db.recipe.findUnique({ where: { slug } })) slug = `${slug}-${Date.now().toString().slice(-5)}`;
-  await db.recipe.create({ data: { ...data, slug, publishedAt: data.status === "PUBLISHED" ? (data.scheduledFor ?? new Date()) : null, ingredients: { create: data.ingredients.map((label, position) => ({ label, position })) }, steps: { create: data.steps.map((body, position) => ({ body, position })) } } });
+  await db.recipe.create({ data: { ...data, slug, publishedAt: data.status === "PUBLISHED" ? (data.scheduledFor ?? new Date()) : null, ingredients: { create: data.ingredients.map((label, position) => ({ ...parseIngredient(label), position })) }, steps: { create: data.steps.map((body, position) => ({ body, position })) } } });
   revalidatePath("/"); redirect(`${studioPath()}?created=1`);
 }
 
 export async function updateRecipe(id: string, formData: FormData) {
   await requireAdmin(); const current = await db.recipe.findUniqueOrThrow({ where: { id } }); const data = await parse(formData, current.image);
-  await db.$transaction([db.ingredient.deleteMany({ where: { recipeId: id } }), db.recipeStep.deleteMany({ where: { recipeId: id } }), db.recipe.update({ where: { id }, data: { ...data, publishedAt: data.status === "PUBLISHED" ? (data.scheduledFor ?? current.publishedAt ?? new Date()) : null, ingredients: { create: data.ingredients.map((label, position) => ({ label, position })) }, steps: { create: data.steps.map((body, position) => ({ body, position })) } } })]);
+  await db.$transaction([db.ingredient.deleteMany({ where: { recipeId: id } }), db.recipeStep.deleteMany({ where: { recipeId: id } }), db.recipe.update({ where: { id }, data: { ...data, publishedAt: data.status === "PUBLISHED" ? (data.scheduledFor ?? current.publishedAt ?? new Date()) : null, ingredients: { create: data.ingredients.map((label, position) => ({ ...parseIngredient(label), position })) }, steps: { create: data.steps.map((body, position) => ({ body, position })) } } })]);
   revalidatePath("/"); revalidatePath(`/recettes/${current.slug}`); redirect(`${studioPath()}?updated=1`);
 }
 
 export async function deleteRecipe(id: string) { await requireAdmin(); await db.recipe.delete({ where: { id } }); revalidatePath("/"); redirect(`${studioPath()}?deleted=1`); }
-export async function duplicateRecipe(id: string) { await requireAdmin(); const source=await db.recipe.findUniqueOrThrow({where:{id},include:{ingredients:true,steps:true}});const slug=`${source.slug}-copie-${Date.now().toString().slice(-5)}`;await db.recipe.create({data:{slug,title:`${source.title} — copie`,description:source.description,image:source.image,prepMinutes:source.prepMinutes,protein:source.protein,calories:source.calories,servings:source.servings,difficulty:source.difficulty,category:source.category,dietary:source.dietary,tags:source.tags,featured:false,status:"DRAFT",ingredients:{create:source.ingredients.map(x=>({label:x.label,position:x.position}))},steps:{create:source.steps.map(x=>({body:x.body,position:x.position}))}}});redirect(`${studioPath()}?duplicated=1`);}
+export async function duplicateRecipe(id: string) { await requireAdmin(); const source=await db.recipe.findUniqueOrThrow({where:{id},include:{ingredients:true,steps:true}});const slug=`${source.slug}-copie-${Date.now().toString().slice(-5)}`;await db.recipe.create({data:{slug,title:`${source.title} — copie`,description:source.description,image:source.image,prepMinutes:source.prepMinutes,protein:source.protein,calories:source.calories,carbohydrates:source.carbohydrates,fat:source.fat,fiber:source.fiber,sugar:source.sugar,sodium:source.sodium,servings:source.servings,difficulty:source.difficulty,category:source.category,dietary:source.dietary,tags:source.tags,collections:source.collections,featured:false,status:"DRAFT",ingredients:{create:source.ingredients.map(x=>({label:x.label,quantity:x.quantity,unit:x.unit,name:x.name,position:x.position}))},steps:{create:source.steps.map(x=>({body:x.body,position:x.position}))}}});redirect(`${studioPath()}?duplicated=1`);}
 export async function createTaxonomy(kind:"category"|"tag",formData:FormData){await requireAdmin();const name=String(formData.get("name")??"").trim();if(name.length<2)return;if(kind==="category")await db.recipeCategory.upsert({where:{name},create:{name},update:{}});else await db.recipeTag.upsert({where:{name},create:{name},update:{}});revalidatePath(studioPath("/reglages"));}
 export async function deleteTaxonomy(kind:"category"|"tag",id:string){await requireAdmin();if(kind==="category")await db.recipeCategory.delete({where:{id}});else await db.recipeTag.delete({where:{id}});revalidatePath(studioPath("/reglages"));}
 export async function deleteMedia(id:string){await requireAdmin();const media=await db.mediaAsset.delete({where:{id}});try{await unlink(path.join(process.cwd(),"public",media.url))}catch{}revalidatePath(studioPath("/medias"));}

@@ -3,6 +3,7 @@ import "./globals.css";
 import "./responsive-fixes.css";
 import "./admin.css";
 import "./product.css";
+import "./editorial.css";
 import { ShoppingDrawer } from "@/components/shopping-drawer";
 export const metadata: Metadata = {
   metadataBase: new URL("https://pulsefood.fr"),

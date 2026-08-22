@@ -1,0 +1,6 @@
+.filter-panel{grid-template-columns:repeat(4,1fr) auto;gap:20px}
+.result-count{margin-top:18px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#68746b}
+.collection-links{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:20px}.collection-links small{text-transform:uppercase;font-size:9px;letter-spacing:.1em}.collection-links span{background:#dce2cc;padding:7px 10px;font-size:10px}
+.nutrition{margin:0 8vw 100px;padding:55px;background:var(--ink);color:white;display:grid;grid-template-columns:.7fr 1.3fr;gap:50px}.nutrition h2,.similar h2{font:48px 'Instrument Serif';font-weight:400;margin:18px 0}.nutrition p{color:#aeb9b0;font-size:12px}.nutrition dl{display:grid;grid-template-columns:repeat(4,1fr);margin:0}.nutrition dl div{padding:18px;border-left:1px solid #526057}.nutrition dt{font-size:9px;text-transform:uppercase;color:#aeb9b0}.nutrition dd{font:34px 'Instrument Serif';margin:12px 0}.nutrition dd small{font:10px 'DM Sans';margin-left:4px}
+.similar{padding:20px 5vw 120px}.similar>h2{font-size:62px;margin-bottom:45px}
+@media(max-width:800px){.filter-panel{grid-template-columns:1fr}.detail-meta{flex-wrap:wrap}.nutrition{margin:0 20px 70px;padding:32px 22px;grid-template-columns:1fr}.nutrition dl{grid-template-columns:repeat(2,1fr)}.similar{padding:10px 20px 80px}.similar>h2{font-size:48px}}
