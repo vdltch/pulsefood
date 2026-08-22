@@ -7,6 +7,8 @@ import "./editorial.css";
 import "./safety.css";
 import "./pwa.css";
 import "./studio-upgrades.css";
+import "./commercial.css";
+import "./commercial-admin.css";
 import { ShoppingDrawer } from "@/components/shopping-drawer";
 import { PwaShell } from "@/components/pwa-shell";
 export const metadata: Metadata = {

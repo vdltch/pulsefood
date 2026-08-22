@@ -13,6 +13,15 @@ enum RecipeStatus {
   ARCHIVED
 }
 
+enum CommercialOffer {
+  PULSE_PLUS
+  PACK
+  BUSINESS
+  PROFESSIONAL
+  CREATOR
+  PREMIUM_NEWSLETTER
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -126,4 +135,19 @@ model NewsletterSubscriber {
   active       Boolean  @default(true)
 
   @@index([subscribedAt])
+}
+
+model CommercialLead {
+  id        String          @id @default(cuid())
+  email     String
+  name      String?
+  company   String?
+  offer     CommercialOffer
+  message   String?
+  source    String?
+  consent   Boolean         @default(false)
+  createdAt DateTime        @default(now())
+
+  @@index([offer, createdAt])
+  @@index([email, offer])
 }
