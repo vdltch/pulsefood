@@ -70,3 +70,13 @@ Les favoris et listes de courses restent dans le navigateur. Les consultations s
 - `ARCHIVED` : conservé dans le studio, masqué du public.
 
 Les images envoyées depuis le studio sont limitées à 8 Mo, redimensionnées à 1800×1200 maximum et converties en WebP.
+
+
+# STEPS
+
+Préparer le lancement
+- Open Graph pour les partages sociaux.
+- Page 404 dans la DA PULSE.
+- Analytics respectueux de la vie privée.
+- Contenu initial : idéalement 15 à 20 recettes.
+- Checklist DNS, HTTPS, e-mails et indexation Google.
