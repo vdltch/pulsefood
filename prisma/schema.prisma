@@ -1,5 +1,26 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "sqlite"; url = env("DATABASE_URL") }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RecipeStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
 
 model Recipe {
   id          String   @id @default(cuid())
@@ -12,10 +33,29 @@ model Recipe {
   calories    Int
   difficulty String   @default("Facile")
   category    String
-  ingredients String
-  steps       String
+  ingredients Ingredient[]
+  steps       RecipeStep[]
   featured    Boolean  @default(false)
-  published   Boolean  @default(true)
+  status      RecipeStatus @default(DRAFT)
+  publishedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Ingredient {
+  id String @id @default(cuid())
+  label String
+  position Int
+  recipeId String
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  @@index([recipeId, position])
+}
+
+model RecipeStep {
+  id String @id @default(cuid())
+  body String
+  position Int
+  recipeId String
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  @@index([recipeId, position])
 }

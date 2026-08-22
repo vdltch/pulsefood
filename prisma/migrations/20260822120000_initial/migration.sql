@@ -1,0 +1,11 @@
+CREATE TYPE "RecipeStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'ARCHIVED');
+CREATE TABLE "AdminUser" ("id" TEXT NOT NULL,"email" TEXT NOT NULL,"name" TEXT NOT NULL,"passwordHash" TEXT NOT NULL,"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "AdminUser_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Recipe" ("id" TEXT NOT NULL,"slug" TEXT NOT NULL,"title" TEXT NOT NULL,"description" TEXT NOT NULL,"image" TEXT NOT NULL,"prepMinutes" INTEGER NOT NULL,"protein" INTEGER NOT NULL,"calories" INTEGER NOT NULL,"difficulty" TEXT NOT NULL DEFAULT 'Facile',"category" TEXT NOT NULL,"featured" BOOLEAN NOT NULL DEFAULT false,"status" "RecipeStatus" NOT NULL DEFAULT 'DRAFT',"publishedAt" TIMESTAMP(3),"createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,"updatedAt" TIMESTAMP(3) NOT NULL,CONSTRAINT "Recipe_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "Ingredient" ("id" TEXT NOT NULL,"label" TEXT NOT NULL,"position" INTEGER NOT NULL,"recipeId" TEXT NOT NULL,CONSTRAINT "Ingredient_pkey" PRIMARY KEY ("id"));
+CREATE TABLE "RecipeStep" ("id" TEXT NOT NULL,"body" TEXT NOT NULL,"position" INTEGER NOT NULL,"recipeId" TEXT NOT NULL,CONSTRAINT "RecipeStep_pkey" PRIMARY KEY ("id"));
+CREATE UNIQUE INDEX "AdminUser_email_key" ON "AdminUser"("email");
+CREATE UNIQUE INDEX "Recipe_slug_key" ON "Recipe"("slug");
+CREATE INDEX "Ingredient_recipeId_position_idx" ON "Ingredient"("recipeId", "position");
+CREATE INDEX "RecipeStep_recipeId_position_idx" ON "RecipeStep"("recipeId", "position");
+ALTER TABLE "Ingredient" ADD CONSTRAINT "Ingredient_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "Recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "RecipeStep" ADD CONSTRAINT "RecipeStep_recipeId_fkey" FOREIGN KEY ("recipeId") REFERENCES "Recipe"("id") ON DELETE CASCADE ON UPDATE CASCADE;

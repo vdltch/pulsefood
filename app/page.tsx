@@ -3,9 +3,10 @@ import Link from "next/link";
 import { ArrowDown, ArrowRight, Clock3, Flame, Instagram, Leaf, Menu, Play, Sparkles, Zap } from "lucide-react";
 import { Logo } from "@/components/icons";
 import { RecipeExplorer } from "@/components/home-client";
-import { recipes } from "@/lib/recipes";
+import { getPublishedRecipes } from "@/lib/recipe-repository";
 
-export default function Home() { return <main>
+export const dynamic="force-dynamic";
+export default async function Home() { const recipes=await getPublishedRecipes(); return <main>
   <header><Link href="/"><Logo/></Link><nav><a href="#recettes">Recettes</a><a href="#programme">Collections</a><a href="#manifeste">Notre manifeste</a></nav><div className="nav-actions"><Link className="saved" href="/admin">Studio <span>4</span></Link><button className="menu"><Menu/></button></div></header>
   <section className="hero">
     <div className="hero-image"><Image src="/hero-bowl.png" alt="Bowl végétarien protéiné" fill priority sizes="100vw"/><div className="hero-stats"><span><Zap size={17}/>34g protéines</span><span><Clock3 size={17}/>25 min</span></div></div>
