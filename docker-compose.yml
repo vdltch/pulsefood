@@ -23,6 +23,8 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       STUDIO_PATH: ${STUDIO_PATH}
       UPLOAD_DIR: /app/public/uploads
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5.4-mini}
     volumes:
       - uploads:/app/public/uploads
     ports:

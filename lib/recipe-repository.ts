@@ -9,7 +9,7 @@ const recipeInclude = {
 export async function getPublishedRecipes(): Promise<Recipe[]> {
   try {
     const rows = await db.recipe.findMany({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", OR: [{ publishedAt: null }, { publishedAt: { lte: new Date() } }] },
       include: recipeInclude,
       orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
     });
@@ -27,7 +27,7 @@ export async function getPublishedRecipes(): Promise<Recipe[]> {
 export async function getPublishedRecipe(slug: string): Promise<Recipe | undefined> {
   try {
     const recipe = await db.recipe.findFirst({
-      where: { slug, status: "PUBLISHED" },
+      where: { slug, status: "PUBLISHED", OR: [{ publishedAt: null }, { publishedAt: { lte: new Date() } }] },
       include: recipeInclude,
     });
     return recipe ? {

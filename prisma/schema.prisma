@@ -40,9 +40,46 @@ model Recipe {
   featured    Boolean  @default(false)
   status      RecipeStatus @default(DRAFT)
   publishedAt DateTime?
+  scheduledFor DateTime?
+  tags        String[] @default([])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   views       ViewEvent[]
+}
+
+model RecipeCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model RecipeTag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+}
+
+model MediaAsset {
+  id        String   @id @default(cuid())
+  filename  String
+  url       String   @unique
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  keyHash   String
+  success   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([keyHash, createdAt])
+  @@index([createdAt])
 }
 
 model ViewEvent {
