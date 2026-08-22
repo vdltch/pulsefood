@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Heart, Minus, Plus, ShoppingBasket, X } from "lucide-react";
 import type { ShoppingItem } from "./shopping-drawer";
 import { formatIngredient, type StructuredIngredient } from "@/lib/ingredient";
+import { updateOfflineRecipe } from "@/lib/pwa-client";
 
 function scaleIngredient(label: string, ratio: number) {
   return label.replace(/^(\d+(?:[.,]\d+)?)/, (value) => {
@@ -32,6 +33,7 @@ export function RecipeExperience({ recipe }: { recipe: { id: string; slug: strin
     const list: string[] = JSON.parse(localStorage.getItem("pulse-favorites") || "[]");
     const next = liked ? list.filter((item) => item !== recipe.slug) : [...new Set([...list, recipe.slug])];
     localStorage.setItem("pulse-favorites", JSON.stringify(next));
+    updateOfflineRecipe(recipe.slug,!liked);
     setLiked(!liked);
     window.dispatchEvent(new Event("pulse-favorites"));
   }

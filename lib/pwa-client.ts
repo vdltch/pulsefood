@@ -1,0 +1,1 @@
+export function updateOfflineRecipe(slug:string,saved:boolean){if(!(typeof navigator!=="undefined"&&"serviceWorker" in navigator))return;navigator.serviceWorker.ready.then(registration=>registration.active?.postMessage({type:saved?"SAVE_RECIPE":"REMOVE_RECIPE",url:`/recettes/${slug}`})).catch(()=>{})}
