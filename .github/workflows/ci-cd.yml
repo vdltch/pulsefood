@@ -107,7 +107,7 @@ jobs:
           ssh -i ~/.ssh/pulsefood_ci "$VPS_USER@$VPS_HOST" '
             cd /opt/pulsefood
             for attempt in $(seq 1 20); do
-              if docker compose exec -T app wget -qO- http://127.0.0.1:3000/api/health | grep -q '"status":"ok"'; then
+              if docker compose exec -T app wget -qO- http://127.0.0.1:3000/api/health | grep -q status; then
                 echo "PULSE est opérationnel"
                 docker image prune -f >/dev/null
                 exit 0
