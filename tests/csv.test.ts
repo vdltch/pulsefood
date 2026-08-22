@@ -1,0 +1,2 @@
+import test from "node:test";import assert from "node:assert/strict";import {parseCsv,toCsv} from "../lib/csv";
+test("CSV conserve virgules, guillemets et retours à la ligne",()=>{const source=[{title:'Bowl, "vert"',description:"Ligne 1\nLigne 2",tags:["été","rapide"]}];const csv=toCsv(source,["title"]);const [row]=parseCsv(csv);assert.equal(row.title,source[0].title);assert.equal(row.description,source[0].description);assert.equal(row.tags,"été|rapide")});
