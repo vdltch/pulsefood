@@ -28,8 +28,8 @@ async function imageFrom(formData: FormData, current = "") {
 async function parse(formData: FormData, currentImage = "") {
   return recipeInputSchema.parse({
     title: formData.get("title"), description: formData.get("description"), image: await imageFrom(formData, currentImage),
-    prepMinutes: formData.get("prepMinutes"), protein: formData.get("protein"), calories: formData.get("calories"),
-    difficulty: formData.get("difficulty"), category: formData.get("category"), ingredients: lines(formData.get("ingredients")),
+    prepMinutes: formData.get("prepMinutes"), protein: formData.get("protein"), calories: formData.get("calories"), servings: formData.get("servings"),
+    difficulty: formData.get("difficulty"), category: formData.get("category"), dietary: lines(formData.get("dietary")), ingredients: lines(formData.get("ingredients")),
     steps: lines(formData.get("steps")), featured: formData.get("featured") === "on", status: formData.get("status"),
   });
 }

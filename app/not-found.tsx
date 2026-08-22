@@ -1,0 +1,2 @@
+import Link from "next/link";import { ArrowLeft } from "lucide-react";import { Logo } from "@/components/icons";
+export default function NotFound(){return <main className="not-found"><Logo/><div><span className="eyebrow">ERREUR 404</span><h1>Cette recette<br/>s'est fait <em>la malle.</em></h1><p>Rien n'est perdu : il reste plein de bonnes choses à cuisiner.</p><Link href="/"><ArrowLeft/>Retourner en cuisine</Link></div></main>}

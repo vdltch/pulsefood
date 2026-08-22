@@ -99,6 +99,22 @@ jobs:
           ssh -i ~/.ssh/pulsefood_ci "$VPS_USER@$VPS_HOST" \
             'cd /opt/pulsefood && docker compose up -d --build --remove-orphans'
 
+      - name: Configure backups and monitoring
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/pulsefood_ci "$VPS_USER@$VPS_HOST" '
+            cd /opt/pulsefood
+            chmod 700 scripts/backup.sh scripts/restore.sh scripts/healthcheck.sh
+            sudo install -m 644 ops/systemd/pulsefood-backup.service /etc/systemd/system/
+            sudo install -m 644 ops/systemd/pulsefood-backup.timer /etc/systemd/system/
+            sudo install -m 644 ops/systemd/pulsefood-health.service /etc/systemd/system/
+            sudo install -m 644 ops/systemd/pulsefood-health.timer /etc/systemd/system/
+            sudo systemctl daemon-reload
+            sudo systemctl enable --now pulsefood-backup.timer pulsefood-health.timer
+          '
+
       - name: Verify application health
         env:
           VPS_HOST: ${{ secrets.VPS_HOST }}

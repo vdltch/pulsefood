@@ -1,22 +1,3 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowUpRight, Clock3, Heart, Zap } from "lucide-react";
-import { useState } from "react";
-import type { Recipe } from "@/lib/recipes";
-
-export function RecipeCard({ recipe, index = 0 }: { recipe: Recipe; index?: number }) {
-  const [liked, setLiked] = useState(false);
-  return <article className="recipe-card reveal" style={{ animationDelay: `${index * 90}ms` }}>
-    <Link href={`/recettes/${recipe.slug}`} className="card-image">
-      <Image src={recipe.image} alt={recipe.title} fill sizes="(max-width: 700px) 90vw, 30vw" />
-      <span className="category">{recipe.category}</span>
-      <span className="open"><ArrowUpRight size={18}/></span>
-    </Link>
-    <div className="card-copy">
-      <div className="meta"><span><Clock3 size={14}/>{recipe.prepMinutes} min</span><span><Zap size={14}/>{recipe.protein}g prot.</span></div>
-      <div className="title-row"><Link href={`/recettes/${recipe.slug}`}><h3>{recipe.title}</h3></Link><button onClick={() => setLiked(!liked)} className={liked ? "liked" : ""} aria-label="Ajouter aux favoris"><Heart size={20} fill={liked ? "currentColor" : "none"}/></button></div>
-      <p>{recipe.description}</p>
-    </div>
-  </article>
-}
+import Image from "next/image";import Link from "next/link";import { ArrowUpRight,Clock3,Heart,Zap } from "lucide-react";import { useEffect,useState } from "react";import type { Recipe } from "@/lib/recipes";
+export function RecipeCard({recipe,index=0}:{recipe:Recipe;index?:number}){const [liked,setLiked]=useState(false);useEffect(()=>{setLiked(JSON.parse(localStorage.getItem("pulse-favorites")||"[]").includes(recipe.slug))},[recipe.slug]);function toggle(){const list:string[]=JSON.parse(localStorage.getItem("pulse-favorites")||"[]");const next=liked?list.filter(x=>x!==recipe.slug):[...new Set([...list,recipe.slug])];localStorage.setItem("pulse-favorites",JSON.stringify(next));setLiked(!liked)}return <article className="recipe-card reveal" style={{animationDelay:`${index*90}ms`}}><Link href={`/recettes/${recipe.slug}`} className="card-image"><Image src={recipe.image} alt={recipe.title} fill sizes="(max-width: 700px) 90vw, 30vw"/><span className="category">{recipe.category}</span><span className="open"><ArrowUpRight size={18}/></span></Link><div className="card-copy"><div className="meta"><span><Clock3 size={14}/>{recipe.prepMinutes} min</span><span><Zap size={14}/>{recipe.protein}g prot.</span></div><div className="title-row"><Link href={`/recettes/${recipe.slug}`}><h3>{recipe.title}</h3></Link><button onClick={toggle} className={liked?"liked":""} aria-label="Ajouter aux favoris"><Heart size={20} fill={liked?"currentColor":"none"}/></button></div><p>{recipe.description}</p></div></article>}
