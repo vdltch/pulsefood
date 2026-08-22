@@ -1,0 +1,119 @@
+name: CI/CD
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: Quality gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: postgresql://pulse:pulse@localhost:5432/pulsefood?schema=public
+      AUTH_SECRET: ci-only-secret-not-used-in-production
+      ADMIN_EMAIL: admin@pulsefood.fr
+      STUDIO_PATH: /studio-ci-check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Node.js 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Security audit
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Production build
+        run: npm run build
+
+  deploy:
+    name: Deploy production
+    if: github.event_name != 'pull_request'
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Configure verified SSH access
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_HOST_KEY: ${{ secrets.VPS_HOST_KEY }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/pulsefood_ci
+          chmod 600 ~/.ssh/pulsefood_ci
+          printf '%s\n' "$VPS_HOST_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Verify production configuration
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/pulsefood_ci "$VPS_USER@$VPS_HOST" \
+            'test -s /opt/pulsefood/.env || { echo "Configuration /opt/pulsefood/.env manquante"; exit 1; }'
+
+      - name: Synchronize application
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          rsync -az --delete \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.env' \
+            --exclude 'node_modules' \
+            --exclude '.next' \
+            --exclude 'public/uploads' \
+            --exclude 'backups' \
+            -e 'ssh -i ~/.ssh/pulsefood_ci' \
+            ./ "$VPS_USER@$VPS_HOST:/opt/pulsefood/"
+
+      - name: Build, migrate and restart
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/pulsefood_ci "$VPS_USER@$VPS_HOST" \
+            'cd /opt/pulsefood && docker compose up -d --build --remove-orphans'
+
+      - name: Verify application health
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/pulsefood_ci "$VPS_USER@$VPS_HOST" '
+            cd /opt/pulsefood
+            for attempt in $(seq 1 20); do
+              if docker compose exec -T app wget -qO- http://127.0.0.1:3000/api/health | grep -q '"status":"ok"'; then
+                echo "PULSE est opérationnel"
+                docker image prune -f >/dev/null
+                exit 0
+              fi
+              sleep 5
+            done
+            docker compose logs --tail=100 app db
+            exit 1
+          '
