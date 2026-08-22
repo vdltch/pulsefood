@@ -1,6 +1,8 @@
 html, body { overflow-x: hidden; }
 
 @media (max-width: 800px) {
+  .hero-copy { width: 100%; max-width: 100%; min-width: 0; }
+  .hero-copy h1 { max-width: 100%; font-size: min(77px, 19.5vw); }
   .hero-actions { width: 100%; }
   .hero-actions .play { font-size: 0; flex: 0 0 42px; }
   .hero-actions .primary { min-width: 0; }

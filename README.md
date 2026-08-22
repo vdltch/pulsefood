@@ -45,7 +45,23 @@ Caddy obtient et renouvelle automatiquement les certificats HTTPS. Au démarrage
 
 ### Sauvegardes
 
-Lancer `sh scripts/backup.sh`, idéalement chaque nuit via cron. Les dumps PostgreSQL sont conservés 14 jours. Le volume `uploads` doit également être sauvegardé par le fournisseur du VPS.
+Le déploiement installe deux timers systemd : surveillance toutes les cinq minutes et sauvegarde quotidienne vers 03h20 UTC. Les dumps PostgreSQL, archives d'uploads et sommes SHA-256 sont conservés 14 jours dans `/opt/pulsefood/backups`.
+
+Une sauvegarde manuelle se lance avec `sudo systemctl start pulsefood-backup.service`. La restauration exige une confirmation explicite : `scripts/restore.sh --confirm backups/database-TIMESTAMP.dump backups/uploads-TIMESTAMP.tar.gz`.
+
+## Prévisualisation avant activation du DNS
+
+L'application n'est jamais exposée publiquement en HTTP. Ouvrir un tunnel chiffré :
+
+```bash
+ssh -N -i ~/.ssh/pulsefood_vps -L 3005:127.0.0.1:3000 ubuntu@92.222.93.85
+```
+
+Puis visiter `http://127.0.0.1:3005`. Fermer le terminal coupe le tunnel.
+
+## Données et confidentialité
+
+Les favoris et listes de courses restent dans le navigateur. Les consultations sont comptées anonymement, sans stocker l'adresse IP ni déposer de cookie analytics. Les pages légales sont accessibles sur `/mentions-legales` et `/confidentialite`.
 
 ### Publication
 
