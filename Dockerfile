@@ -17,6 +17,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY docker-entrypoint.sh ./docker-entrypoint.sh
 RUN mkdir -p public/uploads && chown -R nextjs:nodejs public/uploads
