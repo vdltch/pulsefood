@@ -72,3 +72,12 @@ model RecipeStep {
   recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
   @@index([recipeId, position])
 }
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  subscribedAt DateTime @default(now())
+  active       Boolean  @default(true)
+
+  @@index([subscribedAt])
+}
