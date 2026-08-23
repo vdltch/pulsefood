@@ -7,6 +7,8 @@
     "build": "next build",
     "test": "tsx --test tests/*.test.ts",
     "test:smoke": "node tests/smoke.mjs",
+    "android:sync": "cap sync android",
+    "android:apk": "cap sync android && cd android && ./gradlew assembleDebug",
     "start": "next start",
     "lint": "next lint",
     "db:push": "prisma db push",
@@ -14,6 +16,8 @@
     "db:seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
     "@prisma/client": "^6.1.0",
     "lucide-react": "^0.468.0",
     "next": "^16.3.2",
@@ -23,6 +27,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.6.8",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.3",
     "@types/react-dom": "^19.0.2",
@@ -30,7 +35,9 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
-  "overrides": { "deepmerge-ts": "^8.0.2" },
+  "overrides": {
+    "deepmerge-ts": "^8.0.2"
+  },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   }
