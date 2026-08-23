@@ -47,6 +47,24 @@ Caddy obtient et renouvelle automatiquement les certificats HTTPS. Au démarrage
 
 Le déploiement installe deux timers systemd : surveillance toutes les cinq minutes et sauvegarde quotidienne vers 03h20 UTC. Les dumps PostgreSQL, archives d'uploads et sommes SHA-256 sont conservés 14 jours dans `/opt/pulsefood/backups`.
 
+## Comptes membres et SSO
+
+La connexion par e-mail et mot de passe fonctionne avec `AUTH_SECRET`. Pour activer les boutons OAuth, ajouter les variables suivantes dans `/opt/pulsefood/.env`, puis redémarrer l’application :
+
+```dotenv
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+AUTH_FACEBOOK_ID=
+AUTH_FACEBOOK_SECRET=
+```
+
+Déclarer ces URI de redirection dans les consoles des fournisseurs :
+
+- Google : `https://pulsefood.fr/api/auth/callback/google`
+- Facebook : `https://pulsefood.fr/api/auth/callback/facebook`
+
+Les boutons restent automatiquement masqués tant que les deux identifiants du fournisseur ne sont pas configurés.
+
 Une sauvegarde manuelle se lance avec `sudo systemctl start pulsefood-backup.service`. La restauration exige une confirmation explicite : `scripts/restore.sh --confirm backups/database-TIMESTAMP.dump backups/uploads-TIMESTAMP.tar.gz`.
 
 ## Prévisualisation avant activation du DNS

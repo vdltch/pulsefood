@@ -9,8 +9,10 @@ import "./pwa.css";
 import "./studio-upgrades.css";
 import "./commercial.css";
 import "./commercial-admin.css";
+import "./member.css";
 import { ShoppingDrawer } from "@/components/shopping-drawer";
 import { PwaShell } from "@/components/pwa-shell";
+import { MemberSync } from "@/components/member-sync";
 export const metadata: Metadata = {
   metadataBase: new URL("https://pulsefood.fr"),
   title: "Pulse — Veggie. Protéiné. Vivant.",
@@ -22,4 +24,4 @@ export const metadata: Metadata = {
   formatDetection: {telephone:false},
 };
 export const viewport: Viewport = { themeColor: "#17251b", width: "device-width", initialScale: 1 };
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="fr"><body>{children}<ShoppingDrawer/><PwaShell/></body></html> }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) { return <html lang="fr"><body>{children}<MemberSync/><ShoppingDrawer/><PwaShell/></body></html> }

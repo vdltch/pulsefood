@@ -1,0 +1,3 @@
+import {redirect} from "next/navigation";import {auth} from "@/auth";import {MemberAuthForm} from "@/components/member-auth-form";import {SimpleHeader} from "@/components/simple-header";import {registerAction} from "../actions";
+export const metadata={title:"Inscription — PULSE"};
+export default async function RegisterPage(){if(await auth())redirect("/compte");return <main className="member-auth-page"><SimpleHeader/><section><span className="eyebrow">REJOINDRE PULSE</span><h1>Ta cuisine,<br/><em>bien organisée.</em></h1><MemberAuthForm mode="register" action={registerAction} googleEnabled={!!(process.env.AUTH_GOOGLE_ID&&process.env.AUTH_GOOGLE_SECRET)} facebookEnabled={!!(process.env.AUTH_FACEBOOK_ID&&process.env.AUTH_FACEBOOK_SECRET)}/></section></main>}

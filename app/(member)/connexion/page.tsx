@@ -1,0 +1,3 @@
+import {redirect} from "next/navigation";import {auth} from "@/auth";import {MemberAuthForm} from "@/components/member-auth-form";import {SimpleHeader} from "@/components/simple-header";import {loginMemberAction} from "../actions";
+export const metadata={title:"Connexion — PULSE"};
+export default async function LoginPage(){if(await auth())redirect("/compte");return <main className="member-auth-page"><SimpleHeader/><section><span className="eyebrow">TON ESPACE PULSE</span><h1>Bon retour<br/><em>à table.</em></h1><MemberAuthForm mode="login" action={loginMemberAction} googleEnabled={!!(process.env.AUTH_GOOGLE_ID&&process.env.AUTH_GOOGLE_SECRET)} facebookEnabled={!!(process.env.AUTH_FACEBOOK_ID&&process.env.AUTH_FACEBOOK_SECRET)}/></section></main>}

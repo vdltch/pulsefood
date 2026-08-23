@@ -25,6 +25,7 @@ export function ProgramPlanner({ recipes }: { recipes: Recipe[] }) {
     });
     localStorage.setItem("pulse-shopping", JSON.stringify(next));
     window.dispatchEvent(new Event("pulse-shopping"));
+    void fetch("/api/member/meal-plans",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({slugs:selection.map(item=>item.slug),servings:2})});
     setAdded(true);
   }
 

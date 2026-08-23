@@ -30,12 +30,14 @@ export function RecipeExperience({ recipe }: { recipe: { id: string; slug: strin
 
   useEffect(() => { setLiked(JSON.parse(localStorage.getItem("pulse-favorites") || "[]").includes(recipe.slug)); }, [recipe.slug]);
   function favorite() {
+    const active = !liked;
     const list: string[] = JSON.parse(localStorage.getItem("pulse-favorites") || "[]");
     const next = liked ? list.filter((item) => item !== recipe.slug) : [...new Set([...list, recipe.slug])];
     localStorage.setItem("pulse-favorites", JSON.stringify(next));
-    updateOfflineRecipe(recipe.slug,!liked);
-    setLiked(!liked);
+    updateOfflineRecipe(recipe.slug,active);
+    setLiked(active);
     window.dispatchEvent(new Event("pulse-favorites"));
+    void fetch("/api/member/favorites",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({slug:recipe.slug,active})});
   }
   function addShopping() {
     const raw = JSON.parse(localStorage.getItem("pulse-shopping") || "[]") as unknown[];
