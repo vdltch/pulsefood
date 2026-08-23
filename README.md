@@ -56,6 +56,7 @@ AUTH_GOOGLE_ID=
 AUTH_GOOGLE_SECRET=
 AUTH_FACEBOOK_ID=
 AUTH_FACEBOOK_SECRET=
+AUTH_URL=https://pulsefood.fr
 ```
 
 Déclarer ces URI de redirection dans les consoles des fournisseurs :
