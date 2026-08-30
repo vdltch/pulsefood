@@ -54,8 +54,14 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on: [app]
+    networks:
+      - default
+      - web
 volumes:
   postgres_data:
   uploads:
   caddy_data:
   caddy_config:
+networks:
+  web:
+    external: true
